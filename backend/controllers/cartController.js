@@ -1,0 +1,160 @@
+import userModel from "../models/userModel.js";
+import { v2 as cloudinary } from "cloudinary";
+import { v4 as uuidv4 } from "uuid";
+
+// add products to user cart
+const addToCart = async (req, res) => {
+  try {
+    const { userId, itemId, size } = req.body;
+    const userData = await userModel.findById(userId);
+    const cartData = await userData.cartData;
+
+    if (cartData[itemId]) {
+      if (cartData[itemId][size]) {
+        cartData[itemId][size] += 1;
+      } else {
+        cartData[itemId][size] = 1;
+      }
+    } else {
+      cartData[itemId] = {};
+      cartData[itemId][size] = 1;
+    }
+
+    await userModel.findByIdAndUpdate(userId, { cartData });
+    res.json({ success: true, message: "Product added to cart successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// add custom products to user cart
+const addToCartCustom = async (req, res) => {
+  try {
+    const { userId, imageId, size, views, gender, imageValue, customQuantity } = req.body;
+
+    const reviewImageCustom =
+      req.files.reviewImageCustom && req.files.reviewImageCustom[0];
+
+    const images = [reviewImageCustom].filter((item) => item !== undefined);
+
+    let imagesUrl = await Promise.all(
+      images.map(async (item) => {
+        let result = await cloudinary.uploader.upload(item.path, {
+          resource_type: "image",
+        });
+        return result.secure_url;
+      })
+    );
+
+    const customItem = {
+      _id: imageId,
+      size,
+      name: "Custom" + " " + imageValue + "-" + Math.floor(Math.random() * 10),
+      views,
+      gender,
+      imageValue,
+      reviewImageCustom: imagesUrl,
+      quantity: customQuantity,
+      price: 699
+    };
+
+    const userData = await userModel.findById(userId);
+    if (!userData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User  not found" });
+    }
+
+    const customData = userData.customData || {};
+    const index = Object.keys(customData).length;
+    customData[index] = customItem;
+
+    await userModel.findByIdAndUpdate(userId, { customData }, { new: true });
+
+    res.json({
+      success: true,
+      message: "Custom item added to cart",
+      customData,
+    });
+  } catch (error) {
+    console.error("Error adding custom item to cart:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+//get user custom data
+const getUserCustomData = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const userData = await userModel.findById(userId);
+    const customData = await userData.customData;
+
+    res.json({ success: true, customData });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// update user cart
+const updateCart = async (req, res) => {
+  try {
+    const { userId, itemId, size, quantity } = req.body;
+    const userData = await userModel.findById(userId);
+    const cartData = await userData.cartData;
+
+    cartData[itemId][size] = quantity;
+
+    await userModel.findByIdAndUpdate(userId, { cartData });
+    res.json({ success: true, message: "Cart updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// update custom quantity in the cart
+const updateCustom = async (req, res) => {
+  try {
+    const { userId, itemId, size, quantity } = req.body;
+    const userData = await userModel.findById(userId);
+    const customData = userData.customData || {}; // Initialize customData if it's undefined
+
+    // Check if the item exists
+    if (customData[itemId] && customData[itemId][size]) {
+      customData[itemId][size] = quantity;
+      await userModel.findByIdAndUpdate(userId, { customData });
+      res.json({ success: true, message: "Custom quantity updated" });
+    } else {
+      res.json({ success: false, message: "Custom item not found" });
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// get user cart data
+const getUserCart = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const userData = await userModel.findById(userId);
+    const cartData = await userData.cartData;
+
+    res.json({ success: true, cartData });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export {
+  addToCart,
+  updateCart,
+  getUserCart,
+  addToCartCustom,
+  getUserCustomData,
+  updateCustom
+};

@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a.active hr {
+    display: block;
+}
+
+*{
+    font-family: Outfit;
+}
+
+.prata-regular {
+    font-family: "Prata", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+::-webkit-scrollbar{
+    display: none;
+}
+
+.product-image::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -35px;
+    right: 0;
+    bottom: 0;
+    background: url(/src/assets/logo_only.png);
+    background-size: 50px 50px;
+    background-repeat: repeat;
+    width: 120%;
+    height: 150%;
+    opacity: 0.03;
+    transform: rotate(24deg);
+}
+
+.filter-section {
+    position: sticky;
+    top: 0;
+}
+
+.css-si86to-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
+    padding: 4px 14px !important;
+}
+
+@media (max-width:640px) {
+    a.active{
+        background-color: black;
+        color: white;
+    }
+}
