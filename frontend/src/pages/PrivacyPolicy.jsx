@@ -71,7 +71,7 @@ const PrivacyPolicy = () => {
       <div className='sub_privacy mt-8'>
         <h2 className='text-2xl font-medium mb-2'>Contact Us</h2>
         <p className='mt-2 text-gray-600'>If you have any questions or concerns about our Privacy Policy, please contact us at:</p>
-        <p className='mt-2 text-gray-600'>📧 Email: <a className='text-gray-900' href="mailto:inkdapper@gmail.com">inkdapper@gmail.com</a></p>
+        <p className='mt-2 text-gray-600'>📧 Email: <a className='text-gray-900' href="mailto:support@inkdapper.com">support@inkdapper.com</a></p>
         <p className='mt-2 text-gray-600'>🌐 Website: <a className='text-gray-900' href="https://www.inkdapper.com">www.inkdapper.com</a></p>
 
         <p className='text-lg font-medium mt-2'>Ink Dapper – Your Style, Your Privacy.</p>

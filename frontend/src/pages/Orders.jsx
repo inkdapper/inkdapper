@@ -14,10 +14,12 @@ const Orders = () => {
   const [orderData, setOrderData] = useState([]);
   const [orderStatus, setOrderStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [orderStatusLoading, setOrderStatusLoading] = useState('hidden');
+  const [orderStatusLoading, setOrderStatusLoading] = useState({});
+  const [orderStatusLoadingTwo, setOrderStatusLoadingTwo] = useState({});
   const [showReturnConfirmation, setShowReturnConfirmation] = useState(false);
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState({});
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [returnReason, setReturnReason] = useState('');
   const [cancelReason, setCancelReason] = useState('');
 
@@ -60,9 +62,24 @@ const Orders = () => {
     return returnDateObject < currentDate;
   };
 
-  const handleClick = () => {
+  const handleClick = (item) => {
+    setSelectedOrder(item);
+    setSelectedOrderId(item.orderId);
+    setOrderStatusLoading((prevState) => ({
+      ...prevState,
+      [item.orderId]: 'block',
+    }));
+    setTimeout(() => {
+      setOrderStatusLoading((prevState) => ({
+        ...prevState,
+        [item.orderId]: 'hidden',
+      }));
+    }, 6000);
+  };
+
+  const handleClickTwo = () => {
     loadOrderData();
-    setOrderStatusLoading(isLoading ? 'block' : 'hidden');
+    setOrderStatusLoadingTwo(isLoading ? 'block' : 'hidden');
   };
 
   const handleReturnConfirmation = (item, action) => {
@@ -183,8 +200,8 @@ const Orders = () => {
                     <p className='mt-1 text-xs md:text-sm'>Payment: <span className='text-gray-400'>{item.paymentMethod}</span></p>
                   </div>
                 </div>
-                {item.returnOrderStatus === 'Order Returned' || item.returnOrderStatus === "Return Confirmed" || item.returnOrderStatus === "Order Cancelled" || item.returnOrderStatus === "Cancel Confirmed" ?
-                  <div className={`h-1 rounded-full opacity-25 w-[300px] md:w-80 mt-6 ml-[6%] mb-4 bg-neutral-200 dark:bg-slate-300 top-4 relative lg:block ${orderStatusLoading}`}>
+                {item.returnOrderStatus === 'Order Returned' || item.returnOrderStatus === "Return Confirmed" || item.returnOrderStatus === "Order Cancelled" || item.returnOrderStatus === "Cancel Confirmed" ? (
+                  <div className={`h-1 rounded-full opacity-25 w-[300px] md:w-80 mt-6 ml-[6%] mb-4 bg-neutral-200 dark:bg-slate-300 top-4 relative lg:block`}>
                     <span className='absolute top-[-30px] -left-3'><img src={assets.shopping_icon} alt="" className='w-6' /></span>
                     <span className={`absolute top-[-30px] left-[42px] md:left-[52px] opacity-${item.status === 'Order placed' ? '100' : '100'}`}>
                       <img src={assets.order_placed} alt="Order placed icon" className='w-6' />
@@ -205,10 +222,10 @@ const Orders = () => {
                       <img src={assets.delivered_icon} alt="Delivered icon"
                         style={{ opacity: `${iconOpacityFour}%`, transition: 'opacity 0.5s ease-in-out' }} className='w-6' />
                     </span>
-                    <OrderProgress
-                      item={item} />
-                  </div> :
-                  <div className={`h-1 rounded-full w-[300px] md:w-80 mt-6 ml-[6%] mb-4 bg-neutral-200 dark:bg-slate-300 top-4 relative lg:block ${orderStatusLoading}`}>
+                    <OrderProgress item={item} />
+                  </div>
+                ) : (
+                  <div className={`h-1 rounded-full w-[300px] md:w-80 mt-6 ml-[12%] md:ml-[6%] mb-4 bg-neutral-200 dark:bg-slate-300 top-4 relative lg:block ${selectedOrderId === item.orderId ? orderStatusLoading[item.orderId] : 'hidden'}`}>
                     <span className='absolute top-[-30px] -left-3'><img src={assets.shopping_icon} alt="" className='w-6' /></span>
                     <span className={`absolute top-[-30px] left-[42px] md:left-[52px] opacity-${item.status === 'Order placed' ? '100' : '100'}`}>
                       <img src={assets.order_placed} alt="Order placed icon" className='w-6' />
@@ -229,13 +246,12 @@ const Orders = () => {
                       <img src={assets.delivered_icon} alt="Delivered icon"
                         style={{ opacity: `${iconOpacityFour}%`, transition: 'opacity 0.5s ease-in-out' }} className='w-6' />
                     </span>
-                    <OrderProgress
-                      item={item} />
-                  </div>}
+                    <OrderProgress item={item} />
+                  </div>
+                )}
                 <div className='lg:w-1/4 flex justify-between'>
-                  <OrderStatus item={item}
-                    orderStatusLoading={orderStatusLoading} />
-                  <div className='flex flex-col gap-2'>
+                  <OrderStatus item={item} orderStatusLoading={orderStatusLoading} selectedOrderId={selectedOrderId} />
+                  <div className='flex md:flex-col gap-2'>
                     {item.returnOrderStatus === 'Order Returned' ? (
                       <button className="border px-4 py-2 text-sm font-medium rounded-sm bg-gray-400 text-gray-600 cursor-not-allowed">
                         Return Initiated
@@ -252,25 +268,27 @@ const Orders = () => {
                       <button className="border px-4 py-2 text-sm font-medium rounded-sm bg-gray-200 text-gray-400 cursor-not-allowed">
                         Cancel Completed
                       </button>
-                    ) :
-                      (isReturnExpired ? (
-                        (<button className="border px-4 py-2 text-sm font-medium rounded-sm bg-gray-200 text-gray-500 cursor-not-allowed">
+                    ) : (
+                      isReturnExpired ? (
+                        <button className="border px-4 py-2 text-sm font-medium rounded-sm bg-gray-200 text-gray-500 cursor-not-allowed">
                           Return Expired
-                        </button>)
+                        </button>
                       ) : (
                         <>
-                          <button onClick={handleClick} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
+                          <button onClick={() => handleClick(item)} className='border px-4 py-2 text-sm font-medium rounded-sm block md:hidden'>Track Order</button>
+                          <button onClick={() => handleClickTwo()} className='border px-4 py-2 text-sm font-medium rounded-sm hidden md:block'>Track Order</button>
                           {item.status === 'Delivered' ? (
                             <button onClick={() => handleReturnConfirmation(item, 'return')} className="border px-4 py-2 text-sm font-medium rounded-sm bg-black text-gray-200">
                               Return Valid
                             </button>
-                          ):
-                          <button onClick={() => handleReturnConfirmation(item, 'cancel')} className="border px-4 py-2 text-sm font-medium rounded-sm bg-black text-gray-200">
-                            Cancel Order
-                          </button>}
+                          ) : (
+                            <button onClick={() => handleReturnConfirmation(item, 'cancel')} className="border px-4 py-2 text-sm font-medium rounded-sm bg-black text-gray-200">
+                              Cancel Order
+                            </button>
+                          )}
                         </>
-                      ))
-                    }
+                      )
+                    )}
 
                     {showReturnConfirmation && (
                       <div className='fixed top-0 left-0 w-full h-full bg-black bg-opacity-5 z-20 flex justify-center items-center'>

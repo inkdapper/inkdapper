@@ -126,7 +126,7 @@ const Product = () => {
 
         {/* product image */}
         <div className='flex-1 flex flex-col-reverse gap-3 sm:flex-row w-[100%] sm:w-[605px]'>
-          <div className='flex sm:flex-col md:overflow-x-auto sm:overflow-y-scroll justify-between w-[20%]'>
+          <div className='flex gap-5 md:gap-2 ml-2 md:ml-0 sm:flex-col md:overflow-x-auto sm:overflow-y-scroll justify-between w-[20%]'>
             {
               productData.image.map((item, index) => (
                 <img onClick={() => setImage(item)} src={item} key={index} alt="product-image" className='w-[100%] h-[23%] flex-shrink-0 cursor-pointer shadow-lg' />

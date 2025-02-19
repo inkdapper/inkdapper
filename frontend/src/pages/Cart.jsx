@@ -97,7 +97,7 @@ const Cart = () => {
                         <div className='flex items-center gap-5 mt-2'>
                           <p>{currency} {productData.price}</p>
                           <FormControl sx={{ m: 1, minWidth: 70 }} size="small">
-                            <InputLabel id="demo-select-small-label" sx={{ fontWeight: 'bold' }}>sizes</InputLabel>
+                            <InputLabel id="demo-select-small-label" sx={{ fontWeight: 'bold' }} style={{ top: '-6px', left: '-8px' }}>sizes</InputLabel>
                             <Select
                               value={item.size} onChange={(e) => updateSize(item._id, e.target.value, item.quantity)}
                               labelId="demo-select-small-label"

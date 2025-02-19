@@ -31,32 +31,34 @@ const ReviewViewMore = () => {
   }, [reviewList, productId]);
 
   return (
-    <div className='w-full lg:w-[650px] mt-8 md:mt-10 lg:mt-16'>
-      <div className='flex justify-between items-center'>
-      <h1 className='font-medium text-2xl'>Reviews</h1>
-      {/* <Link to='/review-page'>
-        <p className='cursor-pointer'>View more...</p>
-      </Link> */}
-      </div>
-      <div className='border-4 p-4 mt-4'>
-        <div className='w-full h-[250px] overflow-auto'>
-          <div>
-            {filteredReviews.map((review, index) => (
-              <div key={index} className='mb-3 relative'>
-                <div className='flex items-center gap-2'>
-                  <p className='font-medium text-sm text-gray-500'>{review.usersName}</p>
-                  <span>{renderStars(review.rating)}</span>
+    filteredReviews.length > 0 && (
+      <div className='w-full lg:w-[650px] mt-8 md:mt-10 lg:mt-16'>
+        <div className='flex justify-between items-center'>
+          <h1 className='font-medium text-2xl'>Reviews</h1>
+          {/* <Link to='/review-page'>
+            <p className='cursor-pointer'>View more...</p>
+          </Link> */}
+        </div>
+        <div className='border-4 p-4 mt-4'>
+          <div className='w-full h-[250px] overflow-auto'>
+            <div>
+              {filteredReviews.map((review, index) => (
+                <div key={index} className='mb-3 relative'>
+                  <div className='flex items-center gap-2'>
+                    <p className='font-medium text-sm text-gray-500'>{review.usersName}</p>
+                    <span>{renderStars(review.rating)}</span>
+                  </div>
+                  <p className='font-medium text-base pl-2 pb-1 underline'>{review.reviewSub}</p>
+                  <p className='text-sm mb-2 pl-2 text-gray-500'>{review.reviewDesc}</p>
+                  <div className='text-xs text-gray-400 mb-1 absolute right-0 bottom-0'>{new Date(review.date).toDateString()}</div>
+                  <hr />
                 </div>
-                <p className='font-medium text-base pl-2 pb-1 underline'>{review.reviewSub}</p>
-                <p className='text-sm mb-2 pl-2 text-gray-500'>{review.reviewDesc}</p>
-                <div className='text-xs text-gray-400 mb-1 absolute right-0 bottom-0'>{new Date(review.date).toDateString()}</div>
-                <hr />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    )
   );
 };
 
