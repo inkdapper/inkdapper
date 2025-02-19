@@ -168,7 +168,7 @@ const editProduct = async (req, res) => {
       name,
       description,
       category,
-      beforePrice: Number(beforePrice),
+      //beforePrice: Number(beforePrice),
       price: Number(price),
       code,
       subCategory,
