@@ -15,13 +15,13 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-//Placing Order using COD Method
+// Placing Order using COD Method
 const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
 
-    const returnDate = new Date();
-    returnDate.setDate(returnDate.getDate() + 7);
+    const expectedDeliveryDate = new Date();
+    expectedDeliveryDate.setDate(expectedDeliveryDate.getDate() + 7);
 
     const orderData = {
       userId,
@@ -31,7 +31,7 @@ const placeOrder = async (req, res) => {
       paymentMethod: "COD",
       payment: false,
       date: Date.now(),
-      returnDate: returnDate,
+      expectedDeliveryDate: expectedDeliveryDate,
     };
 
     const newOrder = new orderModel(orderData);
@@ -62,7 +62,7 @@ const placeOrder = async (req, res) => {
               <li><strong>Quantity:</strong> ${item.quantity}</li>
               <li><strong>Price:</strong> ${item.price}</li>
               <li><strong>Order Date:</strong> ${new Date(orderData.date).toLocaleDateString()}</li>
-              <li><strong>Expected Delivery Date:</strong> ${new Date(orderData.returnDate).toLocaleDateString()}</li>
+              <li><strong>Expected Delivery Date:</strong> ${new Date(orderData.expectedDeliveryDate).toLocaleDateString()}</li>
               <li style="margin-top: 10px; bottom-border: 1px solid #000;padding-top: 10px;"><strong>Total Price:</strong> ${item.price * item.quantity}</li>
             </ul>
           `).join('')}
@@ -85,13 +85,13 @@ const placeOrder = async (req, res) => {
   }
 };
 
-//Placing Order using Stripe Method
+// Placing Order using Stripe Method
 const placeOrderStripe = async (req, res) => {};
 
-//Placing Order using Razorpay Method
+// Placing Order using Razorpay Method
 const placeOrderRazorpay = async (req, res) => {};
 
-//All order data from admin panel
+// All order data from admin panel
 const allOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({});
@@ -102,7 +102,7 @@ const allOrders = async (req, res) => {
   }
 };
 
-//User Order Data for Frontend
+// User Order Data for Frontend
 const userOrders = async (req, res) => {
   try {
     const { userId, orderId, returnOrderStatus, returnReason, cancelReason } = req.body;
@@ -120,7 +120,7 @@ const userOrders = async (req, res) => {
   }
 };
 
-//User Details for Profiles
+// User Details for Profiles
 const userDetails = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -133,13 +133,22 @@ const userDetails = async (req, res) => {
   }
 };
 
-//update order status from admin panel
+// Update order status from admin panel
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status, deliveryDate } = req.body;
-    await orderModel.findByIdAndUpdate(orderId, { status, deliveryDate });
-    console.log(orderId);
-    res.json({ success: true, message: "Status Updated" });
+
+    let updateData = { status, deliveryDate };
+
+    if (status === "Delivered") {
+      const returnDate = new Date(deliveryDate);
+      returnDate.setDate(returnDate.getDate() + 7);
+      updateData.returnDate = returnDate;
+    }
+
+    await orderModel.findByIdAndUpdate(orderId, updateData);
+    console.log(updateData.returnDate);
+    res.json({ success: true, message: "Status Updated", returnDate: updateData.returnDate });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });

@@ -30,11 +30,17 @@ const Footer = () => {
             <Link onClick={() => scrollToTop()} to='/about'>
               <li>About Us</li>
             </Link>
-            <Link onClick={() => scrollToTop()} to='/delivery'>
-              <li>Delivery</li>
+            <Link onClick={() => scrollToTop()} to='/shipping-and-delivery'>
+              <li>Shipping & Delivery</li>
             </Link>
             <Link onClick={() => scrollToTop()} to='/privacy-policy'>
               <li>Privacy Policy</li>
+            </Link>
+            <Link onClick={() => scrollToTop()} to='/terms-and-conditions'>
+              <li>Terms & Conditions</li>
+            </Link>
+            <Link onClick={() => scrollToTop()} to='/cancellation-and-refund'>
+              <li>Cancellation & Refund</li>
             </Link>
           </ul>
         </div>

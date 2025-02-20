@@ -37,9 +37,11 @@ const Orders = () => {
             item['payment'] = order.payment;
             item['paymentMethod'] = order.paymentMethod;
             item['date'] = order.date;
+            item['deliveryDate'] = order.deliveryDate;
             item['returnDate'] = order.returnDate;
             item['returnOrderStatus'] = order.returnOrderStatus;
             item['returnReason'] = order.returnReason;
+            item['expectedDeliveryDate'] = order.expectedDeliveryDate;
             item['orderId'] = order._id;
             allOrdersItem.push(item);
             setOrderStatus(order.status);
@@ -151,6 +153,7 @@ const Orders = () => {
 
   useEffect(() => {
     loadOrderData();
+    console.log(orderData);
   }, [token]);
 
   // Calculate opacities based on order status
@@ -187,7 +190,7 @@ const Orders = () => {
             return (
               <div key={index} className='py-4 border-t text-gray-700 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4'>
                 <div className='flex items-start gap-6 text-sm'>
-                  <img className='w-16 h-20 sm:w-20 sm:h-24' src={item.image[0]} alt="" />
+                  <img className='w-28 h-32 sm:w-20 sm:h-24' src={item.image[0]} alt="" />
                   <div className=''>
                     <p className='sm:text-base font-medium'>{item.name}</p>
                     <div className='flex items-center gap-3 mt-1 text-base text-gray-700'>
@@ -196,7 +199,10 @@ const Orders = () => {
                       <p className='text-xs md:text-sm'>Size: <span className='font-medium'>{item.size}</span></p>
                     </div>
                     <p className='mt-1 text-xs md:text-sm'>Date: <span className='text-gray-400'>{new Date(item.date).toDateString()}</span></p>
-                    <p className='mt-1 text-xs md:text-sm'>Return Date: <span className='text-gray-400'>{new Date(item.returnDate).toDateString()}</span></p>
+                    <p className='mt-1 text-xs md:text-sm'>Expected Delivery: <span className='text-gray-400'>{new Date(item.expectedDeliveryDate).toDateString()}</span></p>
+                    {item.returnDate && (
+                      <p className='mt-1 text-xs md:text-sm'>Return Date: <span className='text-gray-400'>{new Date(item.returnDate).toDateString()}</span></p>
+                    )}
                     <p className='mt-1 text-xs md:text-sm'>Payment: <span className='text-gray-400'>{item.paymentMethod}</span></p>
                   </div>
                 </div>

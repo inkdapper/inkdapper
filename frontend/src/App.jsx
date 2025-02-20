@@ -20,6 +20,9 @@ import Wishlist from './pages/Wishlist'
 import ReviewViewMore from './components/ListReviews'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Custom from './pages/Custom'
+import TermsAndConditions from './pages/TermsAndConditions'
+import CancellationAndRefund from './pages/CancellationAndRefund'
+import ShippingAndDelivery from './pages/ShippingAndDelivery'
 
 const App = () => {
   return (
@@ -43,6 +46,9 @@ const App = () => {
         <Route path="/order-details/:productId" element={<OrderDetails/>} />
         <Route path="/review-page" element={<ReviewViewMore/>} />
         <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions/>} />
+        <Route path="/cancellation-and-refund" element={<CancellationAndRefund/>} />
+        <Route path="/shipping-and-delivery" element={<ShippingAndDelivery/>} />
       </Routes>
       <Footer/>
     </div>

@@ -10,7 +10,8 @@ const orderSchema = new mongoose.Schema({
     payment: {type: Boolean, required: true, default: false},
     date: {type: Number, required: true},
     deliveryDate: {type: Number},
-    returnDate: { type: Date, required: true },
+    returnDate: { type: Date},
+    expectedDeliveryDate: { type: Date},
     returnOrderStatus: {type: String, default: 'Order Placed'},
     returnReason: {type: String},
     cancelReason: {type: String}

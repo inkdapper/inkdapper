@@ -53,18 +53,18 @@ const profileUser = async (req, res) => {
   }
 };
 
-//Route for user register
+// Route for user register
 const registerUser = async (req, res) => {
   try {
     const { name, email, phone, password } = req.body;
 
-    //checking user already exist or not
+    // Checking user already exists or not
     const exists = await userModel.findOne({ email, phone });
     if (exists) {
       return res.json({ success: false, message: "User already exists" });
     }
 
-    // validating email format & strong password
+    // Validating email format & strong password
     if (!validator.isEmail(email)) {
       return res.json({
         success: false,
@@ -78,7 +78,7 @@ const registerUser = async (req, res) => {
       });
     }
 
-    //hashing user password
+    // Hashing user password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -100,7 +100,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-//Route for admin login
+// Route for admin login
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -132,22 +132,30 @@ const checkPhone = async (req, res) => {
   res.json({ success: true, message: "Phone number is available" });
 };
 
-//Route for user register
+// Route for user list
 const usersList = async (req, res) => {
   try {
     const userData = await userModel.find({});
     const userIds = userData.map(user => user._id);
+
     const counts = await Promise.all(userIds.map(async userId => {
       const count = await orderModel.countDocuments({ userId, returnOrderStatus: 'Return Confirmed' });
       return { userId, count };
     }));
 
+    const countsOne = await Promise.all(userIds.map(async userId => {
+      const countCancel = await orderModel.countDocuments({ userId, returnOrderStatus: "Cancel Confirmed" });
+      return { userId, countCancel };
+    }));
+
     // Merge userData and counts
     const mergedData = userData.map(user => {
       const countData = counts.find(count => count.userId.equals(user._id));
+      const countDataOne = countsOne.find(countCancel => countCancel.userId.equals(user._id));
       return {
         ...user._doc,
-        returnOrderCount: countData ? countData.count : 0
+        returnOrderCount: countData ? countData.count : 0,
+        cancelOrderCount: countDataOne ? countDataOne.countCancel : 0
       };
     });
 
