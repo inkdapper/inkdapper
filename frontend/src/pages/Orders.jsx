@@ -70,8 +70,7 @@ const Orders = () => {
     setOrderStatusLoading((prevState) => ({
       ...prevState,
       [item.orderId]: 'block',
-    }),
-    loadOrderData());
+    }));
     setTimeout(() => {
       setOrderStatusLoading((prevState) => ({
         ...prevState,
@@ -200,9 +199,7 @@ const Orders = () => {
                       <p className='text-xs md:text-sm'>Size: <span className='font-medium'>{item.size}</span></p>
                     </div>
                     <p className='mt-1 text-xs md:text-sm'>Date: <span className='text-gray-400'>{new Date(item.date).toDateString()}</span></p>
-                    {item.status !== 'Delivered' && (
-                      <p className='mt-1 text-xs md:text-sm'>Expected Delivery: <span className='text-gray-400'>{new Date(item.expectedDeliveryDate).toDateString()}</span></p>
-                    )}
+                    <p className='mt-1 text-xs md:text-sm'>Expected Delivery: <span className='text-gray-400'>{new Date(item.expectedDeliveryDate).toDateString()}</span></p>
                     {item.returnDate && (
                       <p className='mt-1 text-xs md:text-sm'>Return Date: <span className='text-gray-400'>{new Date(item.returnDate).toDateString()}</span></p>
                     )}

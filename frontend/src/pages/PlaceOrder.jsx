@@ -29,38 +29,6 @@ const PlaceOrder = () => {
     setFormData(data => ({ ...data, [name]: value }))
   }
 
-  const initPay = (order, orderData) => {
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY,
-      amount: order.amount,
-      currency: order.currency,
-      name: 'Order Payment',
-      description: 'Order Payment',
-      order_id: order.id,
-      receipt: order.receipt,
-      handler: async (response) => {
-        console.log(response)
-        try {
-          const { data } = await axios.post(backendUrl + '/api/order/verify-razorpay', { ...response, ...orderData }, { headers: { token } })
-          if (data.success) {
-            console.log(data)
-            setCartItems({})
-            navigate('/orders')
-            toast.success('Payment successful')
-          } else {
-            navigate('/place-order')
-            toast.error('Payment failed, please try again')
-          }
-        } catch (error) {
-          console.log(error)
-          toast.error('Payment failed')
-        }
-      }
-    }
-    const rzp = new window.Razorpay(options)
-    rzp.open()
-  }
-
   const onSubmitHandler = async (event) => {
     event.preventDefault()
     try {
@@ -102,16 +70,6 @@ const PlaceOrder = () => {
             toast.error(response.data.message)
           }
           break;
-
-          case 'razorpay':
-            const razorpayResponse = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } })
-            if (razorpayResponse.data.success) {
-              initPay(razorpayResponse.data.order, orderData)
-              console.log(razorpayResponse.data.order)
-            }
-          
-          break;
-
         default:
           break
       }

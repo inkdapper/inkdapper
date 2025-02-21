@@ -2,13 +2,9 @@ import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import Razorpay from "razorpay";
 
 // Load environment variables from .env file
 dotenv.config();
-
-const currency = "inr";
-const DeliveryCharge = 100;
 
 // Configure Nodemailer
 const transporter = nodemailer.createTransport({
@@ -17,12 +13,6 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-});
-
-//Gateway initialization
-const razorpayInstance = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 // Placing Order using COD Method
@@ -58,36 +48,24 @@ const placeOrder = async (req, res) => {
     // Send email with order details
     const user = await userModel.findById(userId);
     const mailOptions = {
-      from: "inkdapper@gmail.com",
+      from: 'inkdapper@gmail.com',
       to: user.email,
-      subject: "Order Confirmation",
+      subject: 'Order Confirmation',
       html: `
         <p>Your order has been placed successfully.<br> <span style="font-weight: bold; font-size: 18px; margin-top: 10px;">Order details:</span></p>
         <div>
-          ${orderData.items
-            .map(
-              (item) => `
-            <img src="${item.image}" alt="${
-                item.name
-              }" style="width: 100px; height: 100px; object-fit: cover; margin-left: 15px;" /> <br>
+          ${orderData.items.map(item => `
+            <img src="${item.image}" alt="${item.name}" style="width: 100px; height: 100px; object-fit: cover; margin-left: 15px;" /> <br>
             <ul style="list-style-type: none; padding: 0;">
               <li><strong>Product Name:</strong> ${item.name} </li>
               <li><strong>Size:</strong> ${item.size} </li>
               <li><strong>Quantity:</strong> ${item.quantity}</li>
               <li><strong>Price:</strong> ${item.price}</li>
-              <li><strong>Order Date:</strong> ${new Date(
-                orderData.date
-              ).toLocaleDateString()}</li>
-              <li><strong>Expected Delivery Date:</strong> ${new Date(
-                orderData.expectedDeliveryDate
-              ).toLocaleDateString()}</li>
-              <li style="margin-top: 10px; bottom-border: 1px solid #000;padding-top: 10px;"><strong>Total Price:</strong> ${
-                item.price * item.quantity
-              }</li>
+              <li><strong>Order Date:</strong> ${new Date(orderData.date).toLocaleDateString()}</li>
+              <li><strong>Expected Delivery Date:</strong> ${new Date(orderData.expectedDeliveryDate).toLocaleDateString()}</li>
+              <li style="margin-top: 10px; bottom-border: 1px solid #000;padding-top: 10px;"><strong>Total Price:</strong> ${item.price * item.quantity}</li>
             </ul>
-          `
-            )
-            .join("")}
+          `).join('')}
         </div>
       `,
     };
@@ -96,7 +74,7 @@ const placeOrder = async (req, res) => {
       if (error) {
         console.log(error);
       } else {
-        console.log("Email sent: " + info.response);
+        console.log('Email sent: ' + info.response);
       }
     });
 
@@ -111,122 +89,7 @@ const placeOrder = async (req, res) => {
 const placeOrderStripe = async (req, res) => {};
 
 // Placing Order using Razorpay Method
-const placeOrderRazorpay = async (req, res) => {
-  try {
-    const { userId, items, amount, address } = req.body;
-
-    const options = {
-      amount: amount * 100,
-      currency: currency.toUpperCase(),
-      receipt: userId.toString(),
-    };
-
-    await razorpayInstance.orders.create(options, (err, order) => {
-      if (err) {
-        console.log(err);
-        return res.json({ success: false, message: err.message });
-      }
-      return res.json({ success: true, order });
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
-};
-
-const verifyRazorpay = async (req, res) => {
-  try {
-    const {
-      userId,
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      items,
-      amount,
-      address,
-    } = req.body;
-    const orderInfo = await razorpayInstance.orders.fetch(razorpay_order_id);
-
-    if (orderInfo.status === "paid") {
-      const expectedDeliveryDate = new Date();
-      expectedDeliveryDate.setDate(expectedDeliveryDate.getDate() + 7);
-
-      const orderData = {
-        userId,
-        items,
-        address,
-        amount,
-        paymentMethod: "Razorpay",
-        payment: true,
-        date: Date.now(),
-        expectedDeliveryDate: expectedDeliveryDate,
-      };
-
-      const newOrder = new orderModel(orderData);
-      await newOrder.save();
-
-      await userModel.findByIdAndUpdate(userId, { cartData: {} });
-
-      const creditPointsToAdd = items.length * 5;
-      await userModel.findByIdAndUpdate(userId, {
-        $inc: { creditPoints: creditPointsToAdd },
-      });
-
-      // Send email with order details
-      const user = await userModel.findById(userId);
-      const mailOptions = {
-        from: "inkdapper@gmail.com",
-        to: user.email,
-        subject: "Order Confirmation",
-        html: `
-          <p>Your order has been placed successfully.<br> <span style="font-weight: bold; font-size: 18px; margin-top: 10px;">Order details:</span></p>
-          <div>
-            ${orderData.items
-              .map(
-                (item) => `
-              <img src="${item.image}" alt="${
-                  item.name
-                }" style="width: 100px; height: 100px; object-fit: cover; margin-left: 15px;" /> <br>
-              <ul style="list-style-type: none; padding: 0;">
-                <li><strong>Product Name:</strong> ${item.name} </li>
-                <li><strong>Size:</strong> ${item.size} </li>
-                <li><strong>Quantity:</strong> ${item.quantity}</li>
-                <li><strong>Price:</strong> ${item.price}</li>
-                <li><strong>Order Date:</strong> ${new Date(
-                  orderData.date
-                ).toLocaleDateString()}</li>
-                <li><strong>Expected Delivery Date:</strong> ${new Date(
-                  orderData.expectedDeliveryDate
-                ).toLocaleDateString()}</li>
-                <li style="margin-top: 10px; bottom-border: 1px solid #000;padding-top: 10px;"><strong>Total Price:</strong> ${
-                  item.price * item.quantity
-                }</li>
-                <li><strong>Payment Method:</strong> Razorpay</li>
-              </ul>
-            `
-              )
-              .join("")}
-          </div>
-        `,
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log("Email sent: " + info.response);
-        }
-      });
-
-      res.json({ success: true, message: "Payment Successful", orderInfo });
-    } else {
-      res.json({ success: false, message: "Payment Failed" });
-    }
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
-  }
-};
+const placeOrderRazorpay = async (req, res) => {};
 
 // All order data from admin panel
 const allOrders = async (req, res) => {
@@ -242,16 +105,15 @@ const allOrders = async (req, res) => {
 // User Order Data for Frontend
 const userOrders = async (req, res) => {
   try {
-    const { userId, orderId, returnOrderStatus, returnReason, cancelReason } =
-      req.body;
+    const { userId, orderId, returnOrderStatus, returnReason, cancelReason } = req.body;
     const orders = await orderModel.find({ userId });
     const returned = await orderModel.findByIdAndUpdate(orderId, {
       returnOrderStatus,
       returnReason,
-      cancelReason,
+      cancelReason
     });
     console.log(userId);
-    res.json({ success: true, message: "Order returned", orders, returned });
+    res.json({ success: true, message: 'Order returned', orders, returned });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -286,11 +148,7 @@ const updateStatus = async (req, res) => {
 
     await orderModel.findByIdAndUpdate(orderId, updateData);
     console.log(updateData.returnDate);
-    res.json({
-      success: true,
-      message: "Status Updated",
-      returnDate: updateData.returnDate,
-    });
+    res.json({ success: true, message: "Status Updated", returnDate: updateData.returnDate });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -316,10 +174,7 @@ const clearCreditPoints = async (req, res) => {
 const countReturnedOrders = async (req, res) => {
   try {
     const { userId } = req.query;
-    const count = await orderModel.countDocuments({
-      userId,
-      returnOrderStatus: "Return Confirmed",
-    });
+    const count = await orderModel.countDocuments({ userId, returnOrderStatus: 'Return Confirmed' });
     res.json({ success: true, count });
   } catch (error) {
     console.log(error);
@@ -337,5 +192,4 @@ export {
   userDetails,
   clearCreditPoints,
   countReturnedOrders,
-  verifyRazorpay,
 };
