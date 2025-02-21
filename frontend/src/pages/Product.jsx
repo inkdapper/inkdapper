@@ -23,6 +23,7 @@ const Product = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [changeText, setChangeText] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [currentImageIndex, setCurrentImageIndex] = useState(0); // State for current image index
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -119,6 +120,23 @@ const Product = () => {
     console.log(products)
   }, [productId, products, size, getCartCount, getWishlistCount, reviewList])
 
+  const openModal = (index) => {
+    setCurrentImageIndex(index);
+    setIsModalOpen(true);
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
+
+  const showNextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % productData.reviewImage.length);
+  }
+
+  const showPrevImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + productData.reviewImage.length) % productData.reviewImage.length);
+  }
+
   return productData ? (
     <div className='border-t-2 pt-6 md:pt-10 transition-opacity ease-in duration-500 opacity-100'>
       {/* product data */}
@@ -126,7 +144,7 @@ const Product = () => {
 
         {/* product image */}
         <div className='flex-1 flex flex-col-reverse gap-3 sm:flex-row w-[100%] sm:w-[605px]'>
-          <div className='flex gap-5 md:gap-2 ml-2 md:ml-0 sm:flex-col md:overflow-x-auto sm:overflow-y-scroll justify-between w-[21%] md:w-[20%]'>
+          <div className='flex gap-5 md:gap-2 ml-0 sm:flex-col md:overflow-x-auto sm:overflow-y-scroll justify-between w-[21%] md:w-[20%]'>
             {
               productData.image.map((item, index) => (
                 <img onClick={() => setImage(item)} src={item} key={index} alt="product-image" className='w-[100%] h-[23%] flex-shrink-0 cursor-pointer shadow-lg' />
@@ -208,7 +226,7 @@ const Product = () => {
           productData.reviewImage.map((item, index) => (
             <div className='mt-5' key={index}>
               <div className='flex flex-col gap-4'>
-                <img src={item} alt="product-image" className='w-40 h-48 object-contain' />
+                <img src={item} alt="product-image" className='w-40 h-28 md:w-40 md:h-48 object-contain cursor-pointer' onClick={() => openModal(index)} />
               </div>
             </div>
           ))
@@ -230,8 +248,12 @@ const Product = () => {
       {isModalOpen && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
           <div className='bg-white p-4 rounded relative'>
-            <button onClick={() => setIsModalOpen(false)} className='absolute top-2 right-4 px-2 bg-gray-500 text-white'>X</button>
-            <img src={assets.product_size} alt='Size Guide' className='mt-6' />
+            <button onClick={closeModal} className='absolute top-2 right-4 px-2 bg-gray-500 text-white'>X</button>
+            <img src={productData.reviewImage[currentImageIndex]} alt='product-image' className='mt-6' />
+            <div className='flex justify-between mt-4'>
+              <button onClick={showPrevImage} className='px-4 py-2 bg-gray-500 text-white'>Prev</button>
+              <button onClick={showNextImage} className='px-4 py-2 bg-gray-500 text-white'>Next</button>
+            </div>
           </div>
         </div>
       )}

@@ -3,9 +3,33 @@ import orderModel from "../models/orderModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import nodemailer from 'nodemailer';
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
+};
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // Use your email service
+  auth: {
+    user: process.env.EMAIL_USER, // Your email address
+    pass: process.env.EMAIL_PASS, // Your email password
+  },
+});
+
+const sendEmail = (to, subject, text) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to,
+    subject,
+    text,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
+const generateResetCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit code
 };
 
 // Route for user login
@@ -166,4 +190,62 @@ const usersList = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, profileUser, checkPhone, usersList };
+const sendResetCode = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: "User doesn't exist" });
+    }
+
+    const resetCode = generateResetCode();
+    const resetCodeExpiry = Date.now() + 3600000; // Code expires in 1 hour
+
+    user.resetCode = resetCode;
+    user.resetCodeExpiry = resetCodeExpiry;
+    await user.save();
+
+    await sendEmail(email, 'Password Reset Code', `Your password reset code is ${resetCode}`);
+
+    res.json({ success: true, message: 'Reset code sent to your email.' });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, code, newPassword } = req.body;
+
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: "User doesn't exist" });
+    }
+
+    console.log(`Stored reset code: ${user.resetCode}`);
+    console.log(`Provided reset code: ${code}`);
+    console.log(`Current time: ${Date.now()}`);
+    console.log(`Reset code expiry time: ${user.resetCodeExpiry}`);
+
+    if (user.resetCode !== code || user.resetCodeExpiry < Date.now()) {
+      return res.json({ success: false, message: 'Invalid or expired reset code' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+    user.resetCode = undefined;
+    user.resetCodeExpiry = undefined;
+    await user.save();
+
+    res.json({ success: true, message: 'Password has been reset.' });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { loginUser, registerUser, adminLogin, profileUser, checkPhone, usersList, sendResetCode, resetPassword };

@@ -27,9 +27,11 @@ const Add = ({ token }) => {
   const [subCategory, setSubCategory] = useState("Customtshirt")
   const [bestseller, setBestseller] = useState(false)
   const [sizes, setSizes] = useState([])
+  const [isLoading, setIsLoading] = useState(false); // State for loading
 
   const onSubmitHandler = async (e) => {
     e.preventDefault()
+    setIsLoading(true); // Set loading to true
 
     try {
       const formData = new FormData()
@@ -78,6 +80,8 @@ const Add = ({ token }) => {
     } catch (error) {
       console.log(error)
       toast.error(error.message)
+    } finally {
+      setIsLoading(false); // Set loading to false
     }
   }
 
@@ -212,7 +216,9 @@ const Add = ({ token }) => {
         <label className='cursor-pointer' htmlFor="bestseller">Add to bestseller</label>
       </div>
 
-      <button type='submit' className='w-28 py-3 mt-4 bg-black text-white'>ADD</button>
+      <button type='submit' className='w-28 py-3 mt-4 bg-black text-white' disabled={isLoading}>
+        {isLoading ? 'Adding...' : 'ADD'}
+      </button>
 
     </form>
   )

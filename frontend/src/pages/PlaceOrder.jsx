@@ -103,13 +103,13 @@ const PlaceOrder = () => {
           }
           break;
 
-          case 'razorpay':
-            const razorpayResponse = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } })
-            if (razorpayResponse.data.success) {
-              initPay(razorpayResponse.data.order, orderData)
-              console.log(razorpayResponse.data.order)
-            }
-          
+        case 'razorpay':
+          const razorpayResponse = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } })
+          if (razorpayResponse.data.success) {
+            initPay(razorpayResponse.data.order, orderData)
+            console.log(razorpayResponse.data.order)
+          }
+
           break;
 
         default:
@@ -163,10 +163,10 @@ const PlaceOrder = () => {
           <Title text1={'PAYMENT'} text2={'METHOD'} />
           {/* ------------payment method------------ */}
           <div className='flex flex-col gap-3 lg:flex-row'>
-            <div onClick={() => setMethod('stripe')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
+            {/* <div onClick={() => setMethod('stripe')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
               <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'stripe' ? 'bg-green-400' : ''} `}></p>
               <img src={assets.stripe_logo} alt="stripe_logo" className='h-5 mx-4' />
-            </div>
+            </div> */}
             <div onClick={() => setMethod('razorpay')} className='flex items-center gap-3 border p-2 px-3 cursor-pointer'>
               <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'razorpay' ? 'bg-green-400' : ''} `}></p>
               <img src={assets.razorpay_logo} alt="razorpay_logo" className='h-5 mx-4' />
