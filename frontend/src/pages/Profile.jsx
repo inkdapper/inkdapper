@@ -15,10 +15,10 @@ const Profile = () => {
   return (
     <div className='border-t-2 pt-4'>
       {
-        usersDetails.map((user, index) => (
-          <div key={index}>
+        usersDetails.length > 0 && (
+          <div key={0}>
             <div className='text-2xl flex pl-4'>
-              <Title text1={'Hi'} text3={user.users.name} className='uppercase text-gray-700' />
+              <Title text1={'Hi'} text3={usersDetails[0].users.name} className='uppercase text-gray-700' />
             </div>
             <div className='mt-4 flex items-center gap-2 md:gap-4'>
               <div className='flex flex-col pl-4'>
@@ -29,7 +29,7 @@ const Profile = () => {
             </div>
             <ProfileListItems />
           </div>
-        ))
+        )
       }
     </div>
   );
