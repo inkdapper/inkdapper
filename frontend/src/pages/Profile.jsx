@@ -16,7 +16,7 @@ const Profile = () => {
     <div className='border-t-2 pt-4'>
       {
         usersDetails.map((user, index) => (
-          <div>
+          <div key={0}>
             <div className='text-2xl flex pl-4'>
               <Title text1={'Hi'} text3={user.users.name} className='uppercase text-gray-700' />
             </div>

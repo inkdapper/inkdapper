@@ -234,7 +234,7 @@ const Orders = () => {
                     <OrderProgress item={item} />
                   </div>
                 ) : (
-                  <div className={`h-1 rounded-full w-[300px] md:w-80 mt-6 ml-[12%] md:ml-[6%] mb-4 bg-neutral-200 dark:bg-slate-300 top-4 relative lg:block ${selectedOrderId === item.orderId ? orderStatusLoading[item.orderId] : 'hidden'}`}>
+                  <div className={`h-1 rounded-full w-[300px] md:w-80 mt-6 ml-[10%] md:ml-[6%] mb-4 bg-neutral-200 dark:bg-slate-300 top-4 relative lg:block ${selectedOrderId === item.orderId ? orderStatusLoading[item.orderId] : 'hidden'}`}>
                     <span className='absolute top-[-30px] -left-3'><img src={assets.shopping_icon} alt="" className='w-6' /></span>
                     <span className={`absolute top-[-30px] left-[42px] md:left-[52px] opacity-${item.status === 'Order placed' ? '100' : '100'}`}>
                       <img src={assets.order_placed} alt="Order placed icon" className='w-6' />

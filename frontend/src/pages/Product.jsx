@@ -23,6 +23,7 @@ const Product = () => {
   const [averageRating, setAverageRating] = useState(0);
   const [changeText, setChangeText] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [isModalOpenOne, setIsModalOpenOne] = useState(false); // State for modal visibility
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // State for current image index
 
   useEffect(() => {
@@ -123,10 +124,12 @@ const Product = () => {
   const openModal = (index) => {
     setCurrentImageIndex(index);
     setIsModalOpen(true);
+    setIsModalOpenOne(true);
   }
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setIsModalOpenOne(false);
   }
 
   const showNextImage = () => {
@@ -246,6 +249,16 @@ const Product = () => {
 
       {/* Modal Component */}
       {isModalOpen && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
+          <div className='bg-white p-4 rounded relative'>
+            <button onClick={closeModal} className='absolute top-2 right-4 px-2 bg-gray-500 text-white'>X</button>
+            <img src={assets.product_size} alt='product-image' className='mt-6' />
+          </div>
+        </div>
+      )}
+
+      {/* Modal Component */}
+      {isModalOpenOne && (
         <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
           <div className='bg-white p-4 rounded relative'>
             <button onClick={closeModal} className='absolute top-2 right-4 px-2 bg-gray-500 text-white'>X</button>

@@ -51,9 +51,13 @@ const OrderDetails = () => {
           productData.map((order, index) => {
             return (
               <div key={index}>
-                <p className='text-gray-500'>Ordered On <span className='text-gray-700'>{new Date(order.date).toDateString()}</span></p>
-                <p className='text-gray-500'>Return Date: <span className='text-gray-700'>{new Date(order.returnDate).toDateString()}</span></p>
-                <p className='text-gray-500'>{isReturnExpired ? "Return period has expired." : "Return period is valid."}</p> {/* Display return status */}
+                <p className='text-gray-500'>Ordered On: <span className='text-gray-700'>{new Date(order.date).toDateString()}</span></p>
+                {order.returnOrderStatus === "Order Returned" && <p className='text-gray-500'>Return Requested On: <span className='text-gray-700'>{new Date(order.returnDate).toDateString()}</span></p>}
+                {order.status === "Delivered" && <p className='text-gray-500'>Delivered On: <span className='text-gray-700'>{new Date(order.deliveryDate).toDateString()}</span></p>}
+                {order.status !== "Delivered" && <p className='text-gray-500'>Expected Delivery Date: <span className='text-gray-700'>{new Date(order.expectedDeliveryDate).toDateString()}</span></p>}
+                {order.deliveryDate && <p className='text-gray-500'>
+                  <p className='text-gray-500 text-base'>{isReturnExpired ? "Return period has expired." : "Return period is valid."}</p></p>}
+                {/* Display return status */}
                 <div className='w-full border mt-4 p-8 border-gray-400 rounded-lg flex flex-col md:flex-row justify-between'>
                   <div className='first-sec flex flex-col md:flex-row gap-8'>
                     <div className='ordered-image'>
