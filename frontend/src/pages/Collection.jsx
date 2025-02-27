@@ -13,10 +13,11 @@ const Collection = () => {
   const { products, search, showSearch, scrollToTop } = useContext(ShopContext)
   const [showFilter, setShowFilter] = useState(false)
   const [filterProducts, setFilterProducts] = useState([])
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(''); // Default to 'All'
   const [subCategory, setSubCategory] = useState([])
   const [sortType, SetSortType] = useState('relevant')
   const [sortValue, setSortValue] = useState('');
+  const [categoryView, setCategoryView] = useState('block')
 
   const toggleSubCategory = (e) => {
     const value = e.target.value;
@@ -24,6 +25,7 @@ const Collection = () => {
     if (value === '') { // If the "All" checkbox is checked/unchecked
       if (e.target.checked) {
         // If "All" is checked, add all unique subcategories
+        setCategoryView('hidden')
         const allSubCategories = products.map(item => item.subCategory);
         setSubCategory([...new Set(allSubCategories)]);
       } else {
@@ -38,6 +40,9 @@ const Collection = () => {
         setSubCategory([...subCategory, value]);
       }
     }
+
+    // Hide the filter section after selecting a subcategory
+    setShowFilter(false);
   }
 
   const allChecked = (e) => {
@@ -95,17 +100,17 @@ const Collection = () => {
           <img src={assets.dropdown_icon} alt="filter" className={`h-3 md:hidden ${showFilter ? 'rotate-90' : ''}`} />
         </p>
         {/* category filter */}
-        <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} md:block`}>
+        <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} md:block transition`}>
           <p className='text-sm mb-3 font-medium'>CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
             <p className='flex gap-2'>
-              <input type="radio" value={''} name="category" className='w-3' onChange={(e) => setCategory(e.target.value)} /> All
+              <input type="radio" value={''} name="category" className='w-3' onChange={(e) => setCategory(e.target.value)} checked={category === ''} /> All
             </p>
             <p className='flex gap-2'>
-              <input type="radio" value={'Men'} name="category" className='w-3' onChange={(e) => setCategory(e.target.value)} /> Men
+              <input type="radio" value={'Men'} name="category" className='w-3' onChange={(e) => setCategory(e.target.value)} checked={category === 'Men'} /> Men
             </p>
             <p className='flex gap-2'>
-              <input type="radio" value={'Women'} name="category" className='w-3' onChange={(e) => setCategory(e.target.value)} /> Women
+              <input type="radio" value={'Women'} name="category" className='w-3' onChange={(e) => setCategory(e.target.value)} checked={category === 'Women'} /> Women
             </p>
             {/* <p className='flex gap-2'>
               <input type="checkbox" value={'Kids'} className='w-3' onChange={toggleCategory}/> Kids
@@ -113,7 +118,7 @@ const Collection = () => {
           </div>
         </div>
         {/* sub category filter */}
-        <div className={`border border-gray-300 pl-5 py-3 my-5 ${showFilter ? '' : 'hidden'} md:block`}>
+        <div className={`border border-gray-300 pl-5 py-3 my-5 ${showFilter ? '' : 'hidden'} md:block ${categoryView} transition`}>
           <p className='text-sm mb-3 font-medium'>TYPE</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
             <p className='flex gap-2'>
@@ -151,7 +156,7 @@ const Collection = () => {
         <div className="md:flex justify-between text-sm sm:text-base md:text-2xl mb-4 relative">
           <Title text1={'ALL'} text2={'COLLECTIONS'} />
           {/* product sort */}
-          <div className='absolute lg:static -top-10 right-0 md:-top-4'>
+          <div className='absolute lg:static -top-2 right-0 md:-top-4'>
             <FormControl sx={{ m: 1, minWidth: {xs:140, sm:180}, fontSize : {xs:10, sm:14} }} size="small">
               <InputLabel id="demo-select-small-label" sx={{fontSize : {xs:14, sm: 18}, top : {xs:3, sm:0}, left : {xs:-3} }} >Filter</InputLabel>
               <Select

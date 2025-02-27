@@ -62,7 +62,7 @@ const ProductItem = ({ id, image, name, price, beforePrice, subCategory }) => {
             <p className='pt-1 pb-1 pl-2 pr-1 md:pt-2 md:pb-2 md:pl-3 md:pr-1 text-sm md:text-base font-medium md:font-semibold truncate'>{name}</p>
             {
               changeText &&
-              <p className='py-1 px-2 mx-0 text-sm text-white truncate -left-[2px] z-10 absolute -top-7 bg-gray-900'>{changeText}</p>
+              <p className='py-[2px] px-1 mx-0 text-xs text-white truncate -left-[1.5px] z-10 absolute -top-[22px] bg-gray-900'>{changeText}</p>
             }
             <div className='flex items-center pt-2 bg-gray-950 rounded-b-md'>
               {

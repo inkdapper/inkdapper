@@ -6,7 +6,8 @@ import {
   singleProduct,
   editProduct,
   addBanner,
-  listBanner
+  listBanner,
+  deleteBanner
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
@@ -36,6 +37,7 @@ productRouter.post("/remove", adminAuth, removeProduct);
 productRouter.post("/single", singleProduct);
 productRouter.get("/list", listProducts);
 productRouter.get("/banner-list", listBanner);
+productRouter.delete("/delete-banner/:id", adminAuth, deleteBanner);
 productRouter.put("/edit/:id",adminAuth,
   upload.fields([
     { name: "image1", maxCount: 1 },

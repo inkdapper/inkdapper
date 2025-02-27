@@ -205,4 +205,19 @@ const editProduct = async (req, res) => {
   }
 }
 
-export { addProduct, listProducts, removeProduct, singleProduct, editProduct, addBanner, listBanner };
+const deleteBanner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const banner = await AddBannerModel.findByIdAndDelete(id);
+    console.log(id);
+    if (!banner) {
+      return res.status(404).json({ success: false, message: "Banner not found" });
+    }
+    res.json({ success: true, message: "Banner Deleted" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { addProduct, listProducts, removeProduct, singleProduct, editProduct, addBanner, listBanner, deleteBanner };

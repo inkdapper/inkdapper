@@ -17,6 +17,7 @@ import BannerImages from './pages/BannerImages'
 import UserList from './pages/UserList'
 import CancelOrders from './pages/CancelOrders'
 import CancelOrderCompleted from './pages/CancelOrderCompleted'
+import BannerList from './pages/BannerList'
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL
 export const currency = <span className='font-semibold gap-2'>₹</span>
@@ -53,6 +54,8 @@ const App = () => {
                 <Route path="/user-list" element={<UserList token={token}/>} />
                 <Route path="/cancel-orders" element={<CancelOrders token={token}/>} />
                 <Route path="/cancel-order-completed" element={<CancelOrderCompleted token={token}/>} />
+                <Route path="/banner-list" element={<BannerList token={token}/>} />
+                <Route path="/banner-images" element={<BannerImages token={token}/>} />
               </Routes>
             </div>
           </div>

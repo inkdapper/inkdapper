@@ -3,6 +3,7 @@ import { assets } from '../assets/assets'
 import axios from 'axios'
 import { backendUrl } from '../App'
 import { toast } from 'react-toastify'
+import { Link } from 'react-router-dom'
 
 const BannerImages = ({ token }) => {
 
@@ -42,7 +43,12 @@ const BannerImages = ({ token }) => {
 
   return (
     <form onSubmit={onSubmitHandler} className='flex flex-col w-full items-start gap-3'>
-      <div>
+      <div className=''>
+        <div className=''>
+          <Link to='/banner-list' className='absolute right-10'>
+            <button className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded'>Banner List</button>
+          </Link>
+        </div>
         <p className='font-semibold mt-3 text-2xl mb-3'>Upload Banner Image</p>
         <p className='mt-3 mb-2'>Product Banner Images</p>
         <div className='flex gap-2'>

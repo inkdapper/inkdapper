@@ -34,7 +34,7 @@ const Slider = () => {
       setCurrentIndex((prevIndex) =>
         prevIndex === slides.length - 1 ? 0 : prevIndex + 1
       );
-    }, 3000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }
